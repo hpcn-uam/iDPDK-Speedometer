@@ -217,24 +217,27 @@ app_lcore_io_rx(
 			
 			start_ewr = lp->rx.start_ewr; end_ewr = lp->rx.end_ewr;
 
-			printf("NIC port %u: drop ratio = %.2f (%u/%u) speed: %lf Gbps (%.1lf pkts/s)\n",
-				(unsigned) port,
-				(double) stats.ierrors / (double) (stats.ierrors + stats.ipackets),
-				(uint32_t) stats.ipackets, (uint32_t) stats.ierrors,
-				(((stats.ibytes)+stats.ipackets*(/*4crc+8prelud+12ifg*/(8+12)))/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec))/1000000.))/(1000*1000*1000./8.),
-				stats.ipackets/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec)) /1000000.)
-				);
 			
 			if(lp->rx.record)
 			{
 				fprintf(lp->rx.record,"%lu\t%lf\t%.1lf\t%u\n",
-				start_ewr.tv_sec,
-				(((stats.ibytes)+stats.ipackets*(/*4crc+8prelud+12ifg*/(8+12)))/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec))/1000000.))/(1000*1000*1000./8.),
-				stats.ipackets/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec)) /1000000.),
-				(uint32_t) stats.ierrors
-				);
+					start_ewr.tv_sec,
+					(((stats.ibytes)+stats.ipackets*(/*4crc+8prelud+12ifg*/(8+12)))/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec))/1000000.))/(1000*1000*1000./8.),
+					stats.ipackets/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec)) /1000000.),
+					(uint32_t) stats.ierrors
+					);
 				fflush(lp->rx.record);
-			}	
+			}
+			else
+			{
+				printf("NIC port %u: drop ratio = %.2f (%u/%u) speed: %lf Gbps (%.1lf pkts/s)\n",
+					(unsigned) port,
+					(double) stats.ierrors / (double) (stats.ierrors + stats.ipackets),
+					(uint32_t) stats.ipackets, (uint32_t) stats.ierrors,
+					(((stats.ibytes)+stats.ipackets*(/*4crc+8prelud+12ifg*/(8+12)))/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec))/1000000.))/(1000*1000*1000./8.),
+					stats.ipackets/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec)) /1000000.)
+					);
+			}
 			
 			lp->rx.nic_queues_iters[i] = 0;
 			lp->rx.nic_queues_count[i] = 0;
