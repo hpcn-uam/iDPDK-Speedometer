@@ -517,6 +517,8 @@ parse_arg_pos_lb(const char *arg)
 	return 0;
 }
 
+extern char record_File [256];
+
 /* Parse the argument given in the command line of the application */
 int
 app_parse_args(int argc, char **argv)
@@ -527,19 +529,15 @@ app_parse_args(int argc, char **argv)
 	char *prgname = argv[0];
 	static struct option lgopts[] = {
 		//aniadido
-		{"folder", 1, 0, 0},
-		{"maxgiga", 1, 0, 0},
-		{"n2dW", 1, 0, 0},
+		{"record", 1, 0, 0},
 		//normal
 		{"rx", 1, 0, 0},
 		{"tx", 1, 0, 0},
-		{"w", 1, 0, 0},
 		{"rsz", 1, 0, 0},
 		{"bsz", 1, 0, 0},
 		{"pos-lb", 1, 0, 0},
 		{NULL, 0, 0, 0}
 	};
-	uint32_t arg_w = 0;
 	uint32_t arg_rx = 0;
 	uint32_t arg_tx = 0;
 	uint32_t arg_rsz = 0;
@@ -571,12 +569,15 @@ app_parse_args(int argc, char **argv)
 				}
 			}
 			if (!strcmp(lgopts[option_index].name, "w")) {
-				arg_w = 1;
 				ret = parse_arg_w(optarg);
 				if (ret) {
 					printf("Incorrect value for --w argument (%d)\n", ret);
 					return -1;
 				}
+			}
+			if (!strcmp(lgopts[option_index].name, "record")) {
+				strcpy(record_File,optarg);
+				printf("Record value set to %s\n", record_File);					
 			}
 			if (!strcmp(lgopts[option_index].name, "rsz")) {
 				arg_rsz = 1;
@@ -610,7 +611,7 @@ app_parse_args(int argc, char **argv)
 	}
 
 	/* Check that all mandatory arguments are provided */
-	if ((arg_rx == 0) || (arg_tx == 0) || (arg_w == 0) ){
+	if ((arg_rx == 0) || (arg_tx == 0) ){
 		printf("Not all mandatory arguments are present\n");
 		return -1;
 	}

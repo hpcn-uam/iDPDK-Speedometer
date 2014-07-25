@@ -224,6 +224,18 @@ app_lcore_io_rx(
 				(((stats.ibytes)+stats.ipackets*(/*4crc+8prelud+12ifg*/(8+12)))/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec))/1000000.))/(1000*1000*1000./8.),
 				stats.ipackets/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec)) /1000000.)
 				);
+			
+			if(lp->rx.record)
+			{
+				fprintf(lp->rx.record,"%lu\t%lf\t%.1lf\t%u\n",
+				start_ewr.tv_sec,
+				(((stats.ibytes)+stats.ipackets*(/*4crc+8prelud+12ifg*/(8+12)))/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec))/1000000.))/(1000*1000*1000./8.),
+				stats.ipackets/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec)) /1000000.),
+				(uint32_t) stats.ierrors
+				);
+				fflush(lp->rx.record);
+			}	
+			
 			lp->rx.nic_queues_iters[i] = 0;
 			lp->rx.nic_queues_count[i] = 0;
 			rte_eth_stats_reset (port);
@@ -473,8 +485,6 @@ app_lcore_main_loop_io(void)
 
 	uint32_t bsz_rx_rd = app.burst_size_io_rx_read;
 	uint32_t bsz_rx_wr = app.burst_size_io_rx_write;
-	uint32_t bsz_tx_rd = app.burst_size_io_tx_read;
-	uint32_t bsz_tx_wr = app.burst_size_io_tx_write;
 
 	uint8_t pos_lb = app.pos_lb;
 
@@ -483,20 +493,11 @@ app_lcore_main_loop_io(void)
 			if (likely(lp->rx.n_nic_queues > 0)) {
 				app_lcore_io_rx_flush(lp, n_workers); 
 			}
-
-			if (likely(lp->tx.n_nic_ports > 0)) {
-				app_lcore_io_tx_flush(lp); 
-			}
-
 			i = 0;
 		}
 
 		if (likely(lp->rx.n_nic_queues > 0)) {
 			app_lcore_io_rx(lp, n_workers, bsz_rx_rd, bsz_rx_wr, pos_lb); 
-		}
-
-		if (likely(lp->tx.n_nic_ports > 0)) {
-			app_lcore_io_tx(lp, n_workers, bsz_tx_rd, bsz_tx_wr); 
 		}
 
 		i ++;
@@ -537,7 +538,6 @@ app_lcore_worker(
 		APP_WORKER_PREFETCH0(lp->mbuf_in.array[1]);
 
 		for (j = 0; j < bsz_rd; j ++) {
-			struct rte_mbuf *pkt;
 			//struct ipv4_hdr *ipv4_hdr;
 			//uint32_t ipv4_dst, pos;
 			//uint8_t port;
@@ -550,10 +550,8 @@ app_lcore_worker(
 			}
 
 			/*Obtenemos el paquete...*/
-			pkt = lp->mbuf_in.array[j];
 			
 			/*se lo pasamos al trabajador*/
-			external_work(/*lp, bsz_wr,*/ pkt);
 			//ipv4_hdr = (struct ipv4_hdr *)(rte_pktmbuf_mtod(pkt, unsigned char *) + sizeof(struct ether_hdr));
 			//ipv4_dst = rte_be_to_cpu_32(ipv4_hdr->dst_addr);
 
@@ -609,9 +607,6 @@ app_lcore_main_loop_worker(void) {
 	uint64_t i = 0;
 
 	uint32_t bsz_rd = app.burst_size_worker_read;
-	uint32_t bsz_wr = app.burst_size_worker_write;
-
-	external_first_exec(&app.lcore_params[lcore], bsz_rd, bsz_wr);
 
 	for ( ; ; ) {
 		/*if (APP_LCORE_WORKER_FLUSH && (unlikely(i == APP_LCORE_WORKER_FLUSH))) {

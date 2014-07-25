@@ -34,6 +34,8 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
+#include <stdio.h>
+
 /* Logical cores */
 #ifndef APP_MAX_SOCKETS
 #define APP_MAX_SOCKETS 2
@@ -247,6 +249,8 @@ struct app_lcore_params_io {
 		} nic_queues[APP_MAX_NIC_RX_QUEUES_PER_IO_LCORE];
 		uint32_t n_nic_queues;
 
+		FILE * record;
+
 		/* Rings */
 		struct rte_ring *rings[APP_MAX_WORKER_LCORES];
 		uint32_t n_rings;
@@ -385,5 +389,3 @@ int MAIN(int argc, char **argv);
 
 #endif /* _MAIN_H_ */
 
-
-#include "external.h"

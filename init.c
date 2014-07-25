@@ -173,10 +173,13 @@ app_init_mbuf_pools(void)
 	}
 }
 
+char record_File [256]={0};
+
 static void
 app_init_rings_rx(void)
 {
 	unsigned lcore;
+	char record_File_tmp [512];
 
 	/* Initialize the rings for the RX side */
 	for (lcore = 0; lcore < APP_MAX_LCORES; lcore ++) {
@@ -186,6 +189,21 @@ app_init_rings_rx(void)
 		if ((app.lcore_params[lcore].type != e_APP_LCORE_IO) ||
 		    (lp_io->rx.n_nic_queues == 0)) {
 			continue;
+		}
+
+		if(record_File[0])
+		{
+			gettimeofday(&lp_io->rx.end_ewr, NULL);
+			sprintf(record_File_tmp,"%s/TimeSeries_Port%d_%lu.txt",record_File,lp_io->rx.nic_queues[0].port,lp_io->rx.end_ewr.tv_sec);
+			lp_io->rx.record=fopen(record_File_tmp,"w+");
+			if(lp_io->rx.record==NULL)
+			{
+				perror("record file");
+				exit(-1);
+			}
+		}else
+		{
+			lp_io->rx.record=NULL;
 		}
 
 		socket_io = rte_lcore_to_socket_id(lcore);
@@ -492,8 +510,6 @@ app_init(void)
 	app_init_rings_rx();
 	app_init_rings_tx();
 	app_init_nics();
-	
-	external_init();
-	
+		
 	printf("Initialization completed.\n");
 }

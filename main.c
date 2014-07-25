@@ -94,12 +94,6 @@ MAIN(int argc, char **argv)
 		return -1;
 	}
 	
-	ret = external_config(argc, argv);
-	if (ret < 0) {
-		app_print_usage();
-		return -1;
-	}
-
 	/* Init */
 	app_init();
 	app_print_params();
