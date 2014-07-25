@@ -40,7 +40,7 @@ if [ $? -eq 0 ] ; then
 	build/app/hpcn_n2d -c 3E -n 2 $1 -- --rx "(0,0,1)" --tx "(0,1)" \
                 --rsz "1024, 2048, 1024, 1024" \
                 --bsz "(144, 512), (512, 144), (144, 144)" \
-		--record "/root/results/dpdk"
+		--record "results"
 
 else
 	echo ""
