@@ -77,11 +77,12 @@
 static struct rte_eth_conf port_conf = {
 	.rxmode = {
 		.mq_mode	= ETH_MQ_RX_RSS,
+		.max_rx_pkt_len = 9000,//ETHER_MAX_JUMBO_FRAME_LEN,
 		.split_hdr_size = 0,
 		.header_split   = 0, /**< Header Split disabled */
-		.hw_ip_checksum = 1, /**< IP checksum offload enabled */
+		.hw_ip_checksum = 0, /**< IP checksum offload enabled */  //DISABLED!
 		.hw_vlan_filter = 0, /**< VLAN filtering disabled */
-		.jumbo_frame    = 0, /**< Jumbo Frame Support disabled */
+		.jumbo_frame    = 1, /**< Jumbo Frame Support disabled */ // ENABLED!
 		.hw_strip_crc   = 0, /**< CRC stripped by hardware */
 	},
 	.rx_adv_conf = {

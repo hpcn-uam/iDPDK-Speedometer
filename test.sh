@@ -38,14 +38,9 @@ if [ $? -eq 0 ] ; then
         #   the I/O RX lcores to identify the worker lcore for the current      
         #   packet (default value is 29)    
 
-#nohup	build/app/hpcn_n2d -c E -n 2 $1 -- --rx "(0,0,1)" --tx "(0,1)" --w "3" \
-	build/app/hpcn_n2d -c 3E -n 2 $1 -- --rx "(0,0,1),(1,0,2)" --tx "(0,1),(1,2)" --w "3" \
-                --rsz "1024, 2048, 1024, 1024" \
-                --bsz "(144, 512), (512, 144), (144, 144)" \
-		--folder "/captura" --maxgiga 1 --n2dW "4" --
-
-#                --bsz "(8, 8), (8, 8), (8, 8)"
-              #  | grep rat | grep -v Worker | sed -e 's/avg.*//gi' | sed -e 's/.*.:.//gi' | sed -e 's/.d.*.%//gi' | sed -e 's/.s.*.%//gi' | sed -e 's/(//gi' | sed -e 's/)//gi' | sed -e 's/\// /gi' | sed -e 's/ /\t/gi' | awk '$1 == "NIC" { nicok+=$2; nicerr+=$3 } $1 == "enq" { print nicerr/(nicok+nicerr), ($3-$2)/$3; nicok=0;nicerr=0 }' 
+	build/app/hpcn_n2d -c 3E -n 2 $1 -- --rx "(0,0,1),(1,0,2)" --tx "(0,1),(1,2)" \
+                --rsz "1024, 64, 64, 64" \
+                --bsz "(144, 512), (512, 144), (144, 144)" 
 
 
 else
