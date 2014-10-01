@@ -222,7 +222,7 @@ app_lcore_io_rx(
 				fprintf(lp->rx.record,"%lu\t%lf\t%.1lf\t%u\n",
 				start_ewr.tv_sec,
 				(((stats.ibytes)+stats.ipackets*(/*4crc+8prelud+12ifg*/(8+12)))/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec))/1000000.))/(1000*1000*1000./8.),
-				stats.ipackets/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec)) /1000000.),
+				(double)stats.ipackets/((((double)end_ewr.tv_sec * (double)1000000. + (double)end_ewr.tv_usec) - ((double)start_ewr.tv_sec * (double)1000000. + (double)start_ewr.tv_usec)) /(double)1000000.),
 				(uint32_t) stats.ierrors
 				);
 				fflush(lp->rx.record);

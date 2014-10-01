@@ -13,5 +13,6 @@ insmod kmod/igb_uio.ko
 cd ../tools
 ./pci_unbind.py --force -b igb_uio 0000:04:00.0
 ./pci_unbind.py --force -b igb_uio 0000:04:00.1
+./pci_unbind.py --force -b ixgbe 0000:04:00.1
 ./pci_unbind.py --status
 cd $curr
