@@ -1,5 +1,7 @@
-export RTE_TARGET=x86_64-default-linuxapp-gcc
+export RTE_TARGET=x86_64-native-linuxapp-gcc
 export RTE_SDK=$(pwd)/../Intel_DPDK/DPDKCUR
+
+export EXTRA_LDFLAGS=-L/root/dpdk/Intel_DPDK/extensions/mlx4/2015-03-26-DPDK-v2.0.0/install/usr/local/lib
 
 clear
 make clean -j9

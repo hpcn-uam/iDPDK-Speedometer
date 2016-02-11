@@ -178,6 +178,7 @@ app_lcore_io_rx_buffer_to_send (
 #endif
 }
 
+//#define QUEUE_STATS
 static inline void
 app_lcore_io_rx(
 	struct app_lcore_params_io *lp,
@@ -214,7 +215,7 @@ app_lcore_io_rx(
 
 			rte_eth_stats_get(port, &stats);
 			gettimeofday(&lp->rx.end_ewr, NULL);
-			
+
 			start_ewr = lp->rx.start_ewr; end_ewr = lp->rx.end_ewr;
 
 			if(lp->rx.record)
@@ -229,6 +230,10 @@ app_lcore_io_rx(
 			}
 			else
 			{
+#ifdef QUEUE_STATS
+			if(queue==0)
+			{
+#endif
 			printf("NIC port %u: drop ratio = %.2f (%u/%u) speed: %lf Gbps (%.1lf pkts/s)\n",
 				(unsigned) port,
 				(double) stats.ierrors / (double) (stats.ierrors + stats.ipackets),
@@ -236,12 +241,27 @@ app_lcore_io_rx(
 				(((stats.ibytes)+stats.ipackets*(/*4crc+8prelud+12ifg*/(8+12)))/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec))/1000000.))/(1000*1000*1000./8.),
 				stats.ipackets/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec)) /1000000.)
 				);
+#ifdef QUEUE_STATS
 			}
-						
+			printf("NIC port %u:%u: drop ratio = %.2f (%u/%u) speed %.1lf pkts/s\n",
+				(unsigned) port, queue,
+				(double) stats.ierrors / (double) (stats.ierrors + lp->rx.nic_queues_count[i]),
+				(uint32_t) lp->rx.nic_queues_count[i], (uint32_t) stats.ierrors,
+				lp->rx.nic_queues_count[i]/(((end_ewr.tv_sec * 1000000. + end_ewr.tv_usec) - (start_ewr.tv_sec * 1000000. + start_ewr.tv_usec)) /1000000.)
+				);
+#endif
+			}
 			lp->rx.nic_queues_iters[i] = 0;
 			lp->rx.nic_queues_count[i] = 0;
+
+#ifdef QUEUE_STATS
+                       	if(queue==0)
+#endif
 			rte_eth_stats_reset (port);
-			
+
+#ifdef QUEUE_STATS
+                  	if(queue==0)
+#endif
 			lp->rx.start_ewr = end_ewr; // Updating start
 		}
 #endif
