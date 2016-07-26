@@ -3,7 +3,7 @@ High Speed Speedometer using Intel DPDK
 
 Intel Data Plane Development Kit (DPDK) Speedometer (Bandwidth consumed monitor) 
 
-This program allows to measure the bandwith consumed on an interface and counts the number of packets there are in a second.
+This program allows to measure the bandwith consumed on an interface and counts the number of packets per second.
 
 
 Compilation

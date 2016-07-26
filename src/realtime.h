@@ -24,28 +24,28 @@ uint64_t realtime_hpet_hz;
 #define PRECCISIONu 10ull
 
 /**
- * Inicializa el modulo
+ * Initialice the module
  **/
 inline void realtime_init(void);
 
 /**
- * Sincroniza el reloj virtual con el reloj del sistema
+ * Synchronize the virtual clock with the system clock
  **/
 inline void realtime_sync_real(void);
 
 /**
- * Sincroniza el reloj virtual de forma simulada
+ * Synchronize virtual clock in a virtual way
  **/
 inline void realtime_sync(void);
 
 /**
- * Optiene el tiempo
+ * Gets the time
  **/
 inline uint64_t realtime_get(void); 
 
 /**
- * optiene una aproximacion del tiempo en funcion del tamanio del paquete.
- * cada APROXCICLES se corrijen los posibiles errores.
+ * Gets an approximation of time depending on packet size.
+ * For each "APROXCICLES" possible clock skews are fixed.
  **/
 inline uint64_t realtime_getAprox(unsigned tam);
 
